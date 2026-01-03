@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rules & Consequences - ClarityVault</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #fff;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, #fca5a5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 32px;
+        }
+
+        .control-bar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            gap: 16px;
+            align-items: end;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .language-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 12px 40px 12px 14px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        .language-select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 14px 28px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .analyze-btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .analyze-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-section.visible {
+            display: block;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .summary-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ef4444;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-text {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .rule-card,
+        .consequence-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .rule-card:hover {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .consequence-card:hover {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .rule-text,
+        .consequence-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: #fff;
+            flex: 1;
+        }
+
+        .severity {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .severity.low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .severity.medium {
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+        }
+
+        .severity.high {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .severity.critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .card-explanation {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+
+        .triggered-by {
+            font-size: 12px;
+            color: rgba(239, 68, 68, 0.8);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .loading-section {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            border: 4px solid rgba(239, 68, 68, 0.2);
+            border-top-color: #ef4444;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        .doc-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo-section">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z" />
+                </svg>
+            </div>
+            <span class="brand-name">ClarityVault</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span class="doc-badge" id="docType">Loading...</span>
+            <span style="color: rgba(255,255,255,0.6); font-size: 14px;" id="docName"></span>
+        </div>
+        <div class="nav-btns">
+            <a href="/viewer/{{ doc_id }}" class="nav-btn">📄 View Document</a>
+            <a href="/analysis/{{ doc_id }}" class="nav-btn">📚 Analyze Terms</a>
+            <a href="/" class="nav-btn">← Upload New</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">⚠️ Rules & Consequences</h1>
+        <p class="page-subtitle">Understand your obligations and what happens if you fail to comply</p>
+
+        <div class="control-bar">
+            <div class="control-group">
+                <label class="control-label">Explain In</label>
+                <select class="language-select" id="targetLanguage">
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="French">French</option>
+                    <option value="German">German</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Bengali">Bengali</option>
+                    <option value="Tamil">Tamil</option>
+                    <option value="Telugu">Telugu</option>
+                    <option value="Marathi">Marathi</option>
+                </select>
+            </div>
+            <button class="analyze-btn" id="analyzeBtn">
+                ⚖️ Analyze Rules & Consequences
+            </button>
+        </div>
+
+        <div id="loadingSection" style="display: none;">
+            <div class="loading-section">
+                <div class="loading-spinner"></div>
+                <p>Analyzing document for rules and consequences...</p>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="summary-card" id="summaryCard" style="display: none;">
+                <div class="summary-title">⚠️ Important Summary</div>
+                <p class="summary-text" id="summaryText"></p>
+            </div>
+
+            <h2 class="section-title"><span>📋</span> Your Obligations & Rules</h2>
+            <div class="cards-grid" id="rulesGrid"></div>
+
+            <h2 class="section-title"><span>🚨</span> Consequences of Non-Compliance</h2>
+            <div class="cards-grid" id="consequencesGrid"></div>
+        </div>
+
+        <div id="emptyState" style="display: none;">
+            <div class="empty-state">
+                <div class="empty-icon">✅</div>
+                <div class="empty-title">No specific rules or consequences found</div>
+                <div class="empty-text">This document doesn't appear to contain binding obligations or penalties.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const docId = '{{ doc_id }}';
+
+        document.addEventListener('DOMContentLoaded', loadDocInfo);
+
+        async function loadDocInfo() {
+            try {
+                const response = await fetch(`/document/${docId}`);
+                const data = await response.json();
+                if (!data.error) {
+                    document.getElementById('docType').textContent = data.document_type;
+                    document.getElementById('docName').textContent = data.filename;
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('analyzeBtn').addEventListener('click', analyzeDocument);
+
+        async function analyzeDocument() {
+            const btn = document.getElementById('analyzeBtn');
+            const loading = document.getElementById('loadingSection');
+            const results = document.getElementById('resultsSection');
+            const empty = document.getElementById('emptyState');
+            const language = document.getElementById('targetLanguage').value;
+
+            btn.classList.add('loading'); btn.disabled = true;
+            loading.style.display = 'block';
+            results.classList.remove('visible');
+            empty.style.display = 'none';
+
+            try {
+                const response = await fetch(`/analyze-consequences/${docId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target_language: language })
+                });
+                const data = await response.json();
+                loading.style.display = 'none';
+
+                if (data.success && (data.rules?.length > 0 || data.consequences?.length > 0)) {
+                    renderResults(data);
+                    results.classList.add('visible');
+                } else {
+                    empty.style.display = 'block';
+                }
+            } catch (e) {
+                loading.style.display = 'none';
+                alert('Error analyzing document');
+            } finally {
+                btn.classList.remove('loading'); btn.disabled = false;
+            }
+        }
+
+        function renderResults(data) {
+            // Summary
+            if (data.summary) {
+                document.getElementById('summaryCard').style.display = 'block';
+                document.getElementById('summaryText').textContent = data.summary;
+            }
+
+            // Rules
+            const rulesGrid = document.getElementById('rulesGrid');
+            if (data.rules && data.rules.length > 0) {
+                rulesGrid.innerHTML = data.rules.map(rule => `
+                    <div class="rule-card">
+                        <div class="card-header">
+                            <span class="rule-text">${escapeHtml(rule.rule)}</span>
+                            <span class="severity ${(rule.severity || 'medium').toLowerCase()}">${rule.severity || 'Medium'}</span>
+                        </div>
+                        <p class="card-explanation">${escapeHtml(rule.explanation)}</p>
+                    </div>
+                `).join('');
+            } else {
+                rulesGrid.innerHTML = '<p style="color: rgba(255,255,255,0.5);">No specific rules identified.</p>';
+            }
+
+            // Consequences
+            const consequencesGrid = document.getElementById('consequencesGrid');
+            if (data.consequences && data.consequences.length > 0) {
+                consequencesGrid.innerHTML = data.consequences.map(c => `
+                    <div class="consequence-card">
+                        <div class="card-header">
+                            <span class="consequence-text">${escapeHtml(c.consequence)}</span>
+                            <span class="severity ${(c.severity || 'high').toLowerCase()}">${c.severity || 'High'}</span>
+                        </div>
+                        <p class="card-explanation">${escapeHtml(c.explanation)}</p>
+                        ${c.triggered_by ? `<p class="triggered-by">⚡ Triggered by: ${escapeHtml(c.triggered_by)}</p>` : ''}
+                    </div>
+                `).join('');
+            } else {
+                consequencesGrid.innerHTML = '<p style="color: rgba(255,255,255,0.5);">No specific consequences identified.</p>';
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>

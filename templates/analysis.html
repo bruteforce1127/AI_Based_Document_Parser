@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Analysis - ClarityVault</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #fff;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 32px;
+        }
+
+        .control-bar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            gap: 16px;
+            align-items: end;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .language-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 12px 40px 12px 14px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        .language-select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 14px 28px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .analyze-btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .analyze-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-section.visible {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .term-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .term-card:hover {
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .term-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .term-word {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f59e0b;
+        }
+
+        .term-category {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .term-explanation {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .videos-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .videos-title {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .video-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .video-item {
+            display: flex;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .video-item:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .video-thumb {
+            width: 100px;
+            height: 56px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .video-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .video-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #fff;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-channel {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .loading-terms {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            border: 4px solid rgba(245, 158, 11, 0.2);
+            border-top-color: #f59e0b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        .doc-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo-section">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z" />
+                </svg>
+            </div>
+            <span class="brand-name">ClarityVault</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span class="doc-badge" id="docType">Loading...</span>
+            <span style="color: rgba(255,255,255,0.6); font-size: 14px;" id="docName"></span>
+        </div>
+        <div class="nav-btns">
+            <a href="/viewer/{{ doc_id }}" class="nav-btn">📄 View Document</a>
+            <a href="/" class="nav-btn">← Upload New</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">📚 Difficult Terms Analysis</h1>
+        <p class="page-subtitle">Identify complex terms in your document and learn what they mean</p>
+
+        <div class="control-bar">
+            <div class="control-group">
+                <label class="control-label">Explain Terms In</label>
+                <select class="language-select" id="targetLanguage">
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="French">French</option>
+                    <option value="German">German</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Bengali">Bengali</option>
+                    <option value="Tamil">Tamil</option>
+                    <option value="Telugu">Telugu</option>
+                    <option value="Marathi">Marathi</option>
+                </select>
+            </div>
+            <button class="analyze-btn" id="analyzeBtn">
+                🔍 Analyze Document
+            </button>
+        </div>
+
+        <div id="loadingSection" style="display: none;">
+            <div class="loading-terms">
+                <div class="loading-spinner"></div>
+                <p>Analyzing document for difficult terms...</p>
+                <p style="font-size: 12px; margin-top: 8px;">This may take a moment</p>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <h2 class="section-title">
+                <span>🎯</span> Difficult Terms Found
+                <span style="font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.5);" id="termCount"></span>
+            </h2>
+            <div class="terms-grid" id="termsGrid"></div>
+        </div>
+
+        <div id="emptyState" style="display: none;">
+            <div class="empty-state">
+                <div class="empty-icon">✨</div>
+                <div class="empty-title">No difficult terms found</div>
+                <div class="empty-text">This document appears to use simple, clear language.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const docId = '{{ doc_id }}';
+
+        document.addEventListener('DOMContentLoaded', loadDocInfo);
+
+        async function loadDocInfo() {
+            try {
+                const response = await fetch(`/document/${docId}`);
+                const data = await response.json();
+                if (!data.error) {
+                    document.getElementById('docType').textContent = data.document_type;
+                    document.getElementById('docName').textContent = data.filename;
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('analyzeBtn').addEventListener('click', analyzeDocument);
+
+        async function analyzeDocument() {
+            const btn = document.getElementById('analyzeBtn');
+            const loading = document.getElementById('loadingSection');
+            const results = document.getElementById('resultsSection');
+            const empty = document.getElementById('emptyState');
+            const language = document.getElementById('targetLanguage').value;
+
+            btn.classList.add('loading'); btn.disabled = true;
+            loading.style.display = 'block';
+            results.classList.remove('visible');
+            empty.style.display = 'none';
+
+            try {
+                const response = await fetch(`/analyze-terms/${docId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target_language: language })
+                });
+                const data = await response.json();
+                loading.style.display = 'none';
+
+                if (data.success && data.terms && data.terms.length > 0) {
+                    renderTerms(data.terms);
+                    results.classList.add('visible');
+                    // Fetch videos for terms
+                    fetchVideos(data.terms.map(t => t.term));
+                } else {
+                    empty.style.display = 'block';
+                }
+            } catch (e) {
+                loading.style.display = 'none';
+                alert('Error analyzing document');
+            } finally {
+                btn.classList.remove('loading'); btn.disabled = false;
+            }
+        }
+
+        function renderTerms(terms) {
+            const grid = document.getElementById('termsGrid');
+            document.getElementById('termCount').textContent = `(${terms.length} terms)`;
+
+            grid.innerHTML = terms.map((term, i) => `
+                <div class="term-card" data-term="${escapeHtml(term.term)}" data-index="${i}">
+                    <div class="term-header">
+                        <span class="term-word">${escapeHtml(term.term)}</span>
+                        <span class="term-category">${escapeHtml(term.category || 'General')}</span>
+                    </div>
+                    <p class="term-explanation">${escapeHtml(term.explanation)}</p>
+                    <div class="videos-section" id="videos-${i}" style="display: none;">
+                        <div class="videos-title">▶️ Related Videos</div>
+                        <div class="video-list" id="videoList-${i}"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function fetchVideos(terms) {
+            try {
+                const response = await fetch('/get-videos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ terms: terms.slice(0, 5) })
+                });
+                const data = await response.json();
+
+                if (data.success && data.videos) {
+                    Object.entries(data.videos).forEach(([term, videos]) => {
+                        const card = document.querySelector(`[data-term="${term}"]`);
+                        if (card) {
+                            const index = card.dataset.index;
+                            const section = document.getElementById(`videos-${index}`);
+                            const list = document.getElementById(`videoList-${index}`);
+
+                            if (videos.length > 0) {
+                                list.innerHTML = videos.map(v => `
+                                    <a href="${v.url}" target="_blank" class="video-item">
+                                        <img src="${v.thumbnail}" alt="" class="video-thumb">
+                                        <div class="video-info">
+                                            <div class="video-title">${escapeHtml(v.title)}</div>
+                                            <div class="video-channel">${escapeHtml(v.channel)}</div>
+                                        </div>
+                                    </a>
+                                `).join('');
+                                section.style.display = 'block';
+                            }
+                        }
+                    });
+                }
+            } catch (e) { console.error('Error fetching videos:', e); }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benefits Analysis - ClarityVault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #fff;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #6ee7b7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #10b981;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        .control-bar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            gap: 16px;
+            align-items: end;
+            margin-bottom: 32px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .language-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .language-select option {
+            background: #1a1a2e;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading-section {
+            text-align: center;
+            padding: 60px;
+            display: none;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            border: 4px solid rgba(16, 185, 129, 0.2);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.visible {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .stat-value.strong {
+            color: #10b981;
+        }
+
+        .stat-value.moderate {
+            color: #3b82f6;
+        }
+
+        .stat-value.minor {
+            color: #8b5cf6;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .summary-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #10b981;
+        }
+
+        .summary-text {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.7;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .clauses-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .clause-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #10b981;
+        }
+
+        .clause-card.strong {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .clause-card.moderate {
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .clause-card.minor {
+            border-left-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .clause-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .clause-category {
+            font-size: 13px;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .clause-score {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .clause-score.strong {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .clause-score.moderate {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .clause-score.minor {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .clause-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.6;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        .clause-explanation {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .clause-explanation-icon {
+            color: #10b981;
+        }
+
+        .clause-explanation-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .strengths-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .strength-item {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .strength-item:last-child {
+            border-bottom: none;
+        }
+
+        .strength-icon {
+            color: #10b981;
+            font-size: 16px;
+        }
+
+        .strength-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo-section">
+            <div class="logo"><svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg></div>
+            <span class="brand-name">ClarityVault</span>
+        </div>
+        <div class="nav-btns">
+            <a href="/risk/{{ doc_id }}" class="nav-btn">📛 Risks</a>
+            <a href="/viewer-auth/{{ doc_id }}" class="nav-btn">📄 Document</a>
+            <a href="/dashboard" class="nav-btn">📁 Dashboard</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">✅ Benefits Analysis</h1>
+            <p class="page-subtitle">Discover the positive aspects and protections in your document</p>
+        </div>
+
+        <div class="control-bar">
+            <div class="control-group">
+                <label class="control-label">Language</label>
+                <select class="language-select" id="languageSelect">
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Spanish">Spanish</option>
+                </select>
+            </div>
+            <button class="analyze-btn" id="analyzeBtn">✨ Analyze Benefits</button>
+        </div>
+
+        <div id="loadingSection" class="loading-section">
+            <div class="loading-spinner"></div>
+            <p>Finding beneficial clauses...</p>
+        </div>
+
+        <div class="results" id="results">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Benefit Score</div>
+                    <div class="stat-value strong" id="overallScore">0/100</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Strong Benefits</div>
+                    <div class="stat-value strong" id="strongBenefits">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Moderate Benefits</div>
+                    <div class="stat-value moderate" id="moderateBenefits">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Beneficial</div>
+                    <div class="stat-value" id="totalBenefits">0</div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Benefits Distribution</div>
+                    <div class="chart-container"><canvas id="benefitsPieChart"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Benefits by Category</div>
+                    <div class="chart-container"><canvas id="categoryBarChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-title">📋 Analysis Summary</div>
+                <p class="summary-text" id="summaryText"></p>
+            </div>
+
+            <h2 class="section-title">🌟 Beneficial Clauses Found</h2>
+            <div class="clauses-list" id="clausesList"></div>
+
+            <h2 class="section-title" style="margin-top: 32px;">💪 Document Strengths</h2>
+            <div class="strengths-card" id="strengthsCard"></div>
+        </div>
+    </div>
+
+    <script>
+        const docId = '{{ doc_id }}';
+        let pieChart = null, barChart = null;
+
+        document.getElementById('analyzeBtn').addEventListener('click', analyze);
+
+        async function analyze() {
+            const btn = document.getElementById('analyzeBtn');
+            const loading = document.getElementById('loadingSection');
+            const results = document.getElementById('results');
+            const language = document.getElementById('languageSelect').value;
+
+            btn.disabled = true;
+            loading.style.display = 'block';
+            results.classList.remove('visible');
+
+            try {
+                const response = await fetch(`/analyze-benefits/${docId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target_language: language })
+                });
+                const data = await response.json();
+                loading.style.display = 'none';
+
+                if (data.success) {
+                    renderResults(data.analysis);
+                    results.classList.add('visible');
+                } else {
+                    alert(data.error || 'Analysis failed');
+                }
+            } catch (e) {
+                loading.style.display = 'none';
+                alert('Error analyzing document');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function renderResults(data) {
+            document.getElementById('overallScore').textContent = `${data.overall_benefit_score || 0}/100`;
+            const breakdown = data.benefit_breakdown || {};
+            document.getElementById('strongBenefits').textContent = breakdown.strong_benefit || 0;
+            document.getElementById('moderateBenefits').textContent = breakdown.moderate_benefit || 0;
+            document.getElementById('totalBenefits').textContent = data.total_beneficial_clauses || 0;
+            document.getElementById('summaryText').textContent = data.summary || '';
+
+            // Pie Chart
+            const pieCtx = document.getElementById('benefitsPieChart').getContext('2d');
+            if (pieChart) pieChart.destroy();
+            pieChart = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Strong', 'Moderate', 'Minor'],
+                    datasets: [{
+                        data: [breakdown.strong_benefit || 0, breakdown.moderate_benefit || 0, breakdown.minor_benefit || 0],
+                        backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#fff' } } } }
+            });
+
+            // Bar Chart
+            const categories = data.benefits_by_category || {};
+            const barCtx = document.getElementById('categoryBarChart').getContext('2d');
+            if (barChart) barChart.destroy();
+            barChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(categories),
+                    datasets: [{ label: 'Count', data: Object.values(categories), backgroundColor: '#10b981' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#999' } }, x: { ticks: { color: '#999' } } }, plugins: { legend: { display: false } } }
+            });
+
+            // Clauses
+            const clauses = data.beneficial_clauses || [];
+            document.getElementById('clausesList').innerHTML = clauses.length > 0 ? clauses.map(c => {
+                const level = (c.benefit_level || 'moderate').toLowerCase();
+                return `
+                    <div class="clause-card ${level}">
+                        <div class="clause-header">
+                            <span class="clause-category">${escapeHtml(c.category)}</span>
+                            <span class="clause-score ${level}">${c.benefit_level} - ${c.benefit_score}/100</span>
+                        </div>
+                        <p class="clause-text">"${escapeHtml(c.clause_text)}"</p>
+                        <div class="clause-explanation">
+                            <span class="clause-explanation-icon">✅</span>
+                            <span class="clause-explanation-text"><strong>Benefit:</strong> ${escapeHtml(c.explanation)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('') : '<p style="color: rgba(255,255,255,0.5);">No beneficial clauses found</p>';
+
+            // Strengths
+            const strengths = data.strengths || [];
+            document.getElementById('strengthsCard').innerHTML = strengths.length > 0 ? strengths.map(s => `
+                <div class="strength-item">
+                    <span class="strength-icon">💪</span>
+                    <span class="strength-text">${escapeHtml(s)}</span>
+                </div>
+            `).join('') : '<p style="color: rgba(255,255,255,0.5);">No strengths identified</p>';
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>

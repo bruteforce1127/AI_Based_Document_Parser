@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClarityVault - PDF Document Classifier</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .logo svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .upload-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover {
+            border-color: rgba(102, 126, 234, 0.5);
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .upload-zone.dragover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-zone.has-file {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .upload-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: #667eea;
+        }
+
+        .upload-text {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        .file-name {
+            color: #10b981;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .file-name.visible {
+            display: block;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .classify-btn {
+            width: 100%;
+            padding: 16px 32px;
+            margin-top: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .classify-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .classify-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .classify-btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .classify-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            top: 50%;
+            left: 50%;
+            margin-left: -12px;
+            margin-top: -12px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .result-container {
+            margin-top: 32px;
+            display: none;
+        }
+
+        .result-container.visible {
+            display: block;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .result-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .result-type {
+            color: #10b981;
+            font-size: 32px;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        .result-file {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .error-card {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(185, 28, 28, 0.1) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .error-text {
+            color: #ef4444;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .new-upload-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .new-upload-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div class="logo">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z" />
+                        <path d="M8 12h8v2H8zm0 4h8v2H8z" />
+                    </svg>
+                </div>
+                <h1>ClarityVault</h1>
+                <p class="subtitle">AI-Powered Document Classification</p>
+            </div>
+
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17,8 12,3 7,8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                </div>
+                <p class="upload-text">Drop your PDF here</p>
+                <p class="upload-hint">or click to browse files</p>
+                <p class="file-name" id="fileName"></p>
+                <input type="file" id="fileInput" accept=".pdf">
+            </div>
+
+            <button class="classify-btn" id="classifyBtn" disabled>
+                Classify Document
+            </button>
+
+            <div class="result-container" id="resultContainer">
+                <!-- Results will be inserted here -->
+            </div>
+        </div>
+
+        <p class="footer">
+            Powered by <a href="https://groq.com" target="_blank">Groq AI</a>
+        </p>
+    </div>
+
+    <script>
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const classifyBtn = document.getElementById('classifyBtn');
+        const resultContainer = document.getElementById('resultContainer');
+
+        let selectedFile = null;
+
+        // Click to upload
+        uploadZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        // Drag and drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file) return;
+
+            if (file.type !== 'application/pdf') {
+                showError('Please upload a PDF file');
+                return;
+            }
+
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileName.classList.add('visible');
+            uploadZone.classList.add('has-file');
+            classifyBtn.disabled = false;
+            resultContainer.classList.remove('visible');
+        }
+
+        // Classify button click
+        classifyBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            classifyBtn.classList.add('loading');
+            classifyBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const response = await fetch('/classify', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showResult(data.document_type, data.filename, data.doc_id);
+                } else {
+                    showError(data.error || 'Classification failed');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+            } finally {
+                classifyBtn.classList.remove('loading');
+                classifyBtn.disabled = false;
+            }
+        });
+
+        function showResult(type, file, docId) {
+            resultContainer.innerHTML = `
+                <div class="result-card">
+                    <p class="result-label">Document Type</p>
+                    <p class="result-type">${type}</p>
+                    <p class="result-file">📄 ${file}</p>
+                </div>
+                <a href="/viewer/${docId}" class="new-upload-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; text-decoration: none; display: inline-block; margin-top: 20px;">View Document & Translate →</a>
+                <button class="new-upload-btn" onclick="resetUpload()" style="margin-left: 10px;">Upload Another</button>
+                <p style="color: rgba(255,255,255,0.4); font-size: 12px; margin-top: 12px;">Redirecting to viewer in <span id="countdown">3</span>s...</p>
+            `;
+            resultContainer.classList.add('visible');
+
+            // Auto-redirect countdown
+            let count = 3;
+            const countdownEl = document.getElementById('countdown');
+            const interval = setInterval(() => {
+                count--;
+                countdownEl.textContent = count;
+                if (count <= 0) {
+                    clearInterval(interval);
+                    window.location.href = '/viewer/' + docId;
+                }
+            }, 1000);
+        }
+
+        function showError(message) {
+            resultContainer.innerHTML = `
+                <div class="error-card">
+                    <p class="error-text">⚠️ ${message}</p>
+                </div>
+                <button class="new-upload-btn" onclick="resetUpload()">Try Again</button>
+            `;
+            resultContainer.classList.add('visible');
+        }
+
+        function resetUpload() {
+            selectedFile = null;
+            fileInput.value = '';
+            fileName.textContent = '';
+            fileName.classList.remove('visible');
+            uploadZone.classList.remove('has-file');
+            classifyBtn.disabled = true;
+            resultContainer.classList.remove('visible');
+        }
+    </script>
+</body>
+
+</html>
