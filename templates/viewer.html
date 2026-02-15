@@ -471,10 +471,35 @@
                 height: auto;
             }
 
+            .viewer-panel {
+                height: 50vh;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
             .translation-panel {
                 width: 100%;
+                height: 50vh;
                 border-left: none;
                 border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px;
+            }
+
+            .doc-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .back-btn {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -513,7 +538,7 @@
         <div class="translation-panel">
             <div class="tabs">
                 <button class="tab active" onclick="switchTab('text')">Translate Text</button>
-                <button class="tab" onclick="switchTab('full')">Translate Full PDF</button>
+                <button class="tab" onclick="switchTab('full')">Translate Full Document</button>
             </div>
 
             <!-- Text Translation Tab -->
@@ -558,11 +583,11 @@
                 </div>
             </div>
 
-            <!-- Full PDF Translation Tab -->
+            <!-- Full Document Translation Tab -->
             <div class="tab-content" id="fullTab">
                 <div class="panel-body">
                     <div class="full-translate-info">
-                        <p>Translate the <strong>entire PDF document</strong> to your desired language.</p>
+                        <p>Translate the <strong>entire document</strong> to your desired language.</p>
                         <p>Each page will be translated separately.</p>
                     </div>
                     <div class="input-group">
@@ -588,7 +613,7 @@
                             <option value="Punjabi">Punjabi</option>
                         </select>
                     </div>
-                    <button class="translate-btn" id="fullTranslateBtn">🌐 Translate Entire PDF</button>
+                    <button class="translate-btn" id="fullTranslateBtn">🌐 Translate Entire Document</button>
                     <div id="fullTranslateProgress" style="display: none;">
                         <div class="progress-bar">
                             <div class="progress-fill" id="progressFill"></div>
@@ -690,7 +715,7 @@
             finally { btn.classList.remove('loading'); btn.disabled = false; }
         });
 
-        // Full PDF Translation
+        // Full Document Translation
         document.getElementById('fullTranslateBtn').addEventListener('click', async () => {
             const language = document.getElementById('fullTargetLanguage').value;
             const btn = document.getElementById('fullTranslateBtn');

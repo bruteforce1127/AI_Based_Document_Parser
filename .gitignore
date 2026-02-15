@@ -28,3 +28,9 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Dev test scripts
+test_*.py
+
+# Gemini
+.gemini/

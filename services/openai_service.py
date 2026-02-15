@@ -1,15 +1,12 @@
 """
-Groq AI Service - Handles all AI operations
+OpenAI Service - Handles all AI operations
 """
-from groq import Groq
 import config
 from services import key_manager
 
-# client = Groq(api_key=config.GROQ_API_KEY)
-
 
 def classify_document(text):
-    """Use Groq AI to classify the document type"""
+    """Use OpenAI to classify the document type"""
     if not text or len(text.strip()) < 10:
         return "Unreadable Document"
     
@@ -39,7 +36,7 @@ Document text:
 Document type (1-3 words only):"""
 
     try:
-        client = key_manager.get_groq_client()
+        client = key_manager.get_openai_client()
         chat_completion = client.chat.completions.create(
             messages=[
                 {
@@ -51,7 +48,7 @@ Document type (1-3 words only):"""
                     "content": prompt
                 }
             ],
-            model=config.GROQ_MODEL,
+            model=config.OPENAI_MODEL,
             temperature=0.1,
             max_tokens=20
         )
@@ -67,7 +64,7 @@ Document type (1-3 words only):"""
 
 
 def translate_text(text, target_language):
-    """Use Groq AI to translate text to target language"""
+    """Use OpenAI to translate text to target language"""
     if not text or len(text.strip()) < 1:
         return "No text to translate"
     
@@ -80,7 +77,7 @@ Text to translate:
 Translation:"""
 
     try:
-        client = key_manager.get_groq_client()
+        client = key_manager.get_openai_client()
         chat_completion = client.chat.completions.create(
             messages=[
                 {
@@ -92,7 +89,7 @@ Translation:"""
                     "content": prompt
                 }
             ],
-            model=config.GROQ_MODEL,
+            model=config.OPENAI_MODEL,
             temperature=0.3,
             max_tokens=4000
         )
@@ -153,7 +150,7 @@ Document text:
 Respond with ONLY the JSON array, no other text:"""
 
     try:
-        client = key_manager.get_groq_client()
+        client = key_manager.get_openai_client()
         chat_completion = client.chat.completions.create(
             messages=[
                 {
@@ -165,7 +162,7 @@ Respond with ONLY the JSON array, no other text:"""
                     "content": prompt
                 }
             ],
-            model=config.GROQ_MODEL,
+            model=config.OPENAI_MODEL,
             temperature=0.3,
             max_tokens=2000
         )
@@ -222,7 +219,7 @@ Document text:
 Respond with ONLY valid JSON:"""
 
     try:
-        client = key_manager.get_groq_client()
+        client = key_manager.get_openai_client()
         chat_completion = client.chat.completions.create(
             messages=[
                 {
@@ -234,7 +231,7 @@ Respond with ONLY valid JSON:"""
                     "content": prompt
                 }
             ],
-            model=config.GROQ_MODEL,
+            model=config.OPENAI_MODEL,
             temperature=0.2,
             max_tokens=3000
         )

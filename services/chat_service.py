@@ -5,8 +5,6 @@ import json
 import config
 from services import key_manager
 
-# client = Groq(api_key=config.GROQ_API_KEY)
-
 # In-memory store for conversation history (per document)
 # In production, this should be stored in database
 conversation_store = {}
@@ -82,10 +80,10 @@ Always base your answers on the actual document content provided above."""
     messages.append({"role": "user", "content": question})
     
     try:
-        client = key_manager.get_groq_client()
+        client = key_manager.get_openai_client()
         chat_completion = client.chat.completions.create(
             messages=messages,
-            model=config.GROQ_MODEL,
+            model=config.OPENAI_MODEL,
             temperature=0.5,
             max_tokens=1500
         )

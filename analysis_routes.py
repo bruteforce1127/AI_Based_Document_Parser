@@ -2,7 +2,7 @@
 Analysis Routes - Routes for tough words analysis feature
 """
 from flask import Blueprint, render_template, request, jsonify
-from services import groq_service, youtube_service
+from services import openai_service, youtube_service
 from routes import document_store
 
 analysis = Blueprint('analysis', __name__)
@@ -31,7 +31,7 @@ def analyze_terms(doc_id):
     full_text = '\n\n'.join([p['content'] for p in doc['pages']])
     
     # Analyze for difficult terms
-    terms = groq_service.analyze_difficult_terms(full_text, target_language)
+    terms = openai_service.analyze_difficult_terms(full_text, target_language)
     
     return jsonify({
         'success': True,

@@ -1,11 +1,9 @@
 """
 Comparison Service - Market analysis and alternatives comparison using AI
 """
-from services import groq_service
+from services import openai_service
 import config
 from services import key_manager
-
-# client = Groq(api_key=config.GROQ_API_KEY)
 
 
 def analyze_document_for_comparison(text, document_type, target_language='English'):
@@ -53,7 +51,7 @@ Respond in {target_language} using this EXACT JSON format:
 Respond with ONLY valid JSON:"""
 
     try:
-        client = key_manager.get_groq_client()
+        client = key_manager.get_openai_client()
         chat_completion = client.chat.completions.create(
             messages=[
                 {
@@ -65,7 +63,7 @@ Respond with ONLY valid JSON:"""
                     "content": prompt
                 }
             ],
-            model=config.GROQ_MODEL,
+            model=config.OPENAI_MODEL,
             temperature=0.4,
             max_tokens=3000
         )

@@ -14,6 +14,7 @@ from comparison_routes import comparison
 from chat_routes import chat
 from risk_routes import risk
 from benefits_routes import benefits
+from podcast_routes import podcast
 
 # Create Flask app
 app = Flask(__name__)
@@ -36,6 +37,7 @@ app.register_blueprint(comparison)
 app.register_blueprint(chat)
 app.register_blueprint(risk)
 app.register_blueprint(benefits)
+app.register_blueprint(podcast)
 
 
 # Root redirect to dashboard/login

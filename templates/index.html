@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClarityVault - PDF Document Classifier</title>
+    <title>ClarityVault - Document Classifier</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
         }
 
         .container {
-            width: 100%;
+            width: 90%;
             max-width: 600px;
         }
 
@@ -77,6 +77,28 @@
             color: rgba(255, 255, 255, 0.6);
             font-size: 16px;
             font-weight: 400;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 32px 24px;
+            }
+
+            .header {
+                margin-bottom: 30px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            .upload-zone {
+                padding: 32px 16px;
+            }
         }
 
         .upload-zone {
@@ -323,10 +345,10 @@
                         <line x1="12" y1="3" x2="12" y2="15" />
                     </svg>
                 </div>
-                <p class="upload-text">Drop your PDF here</p>
-                <p class="upload-hint">or click to browse files</p>
+                <p class="upload-text">Drop your document here</p>
+                <p class="upload-hint">PDF, Images, DOCX, PPTX, TXT supported</p>
                 <p class="file-name" id="fileName"></p>
-                <input type="file" id="fileInput" accept=".pdf">
+                <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.bmp,.tiff,.webp,.docx,.pptx,.txt">
             </div>
 
             <button class="classify-btn" id="classifyBtn" disabled>
@@ -339,7 +361,7 @@
         </div>
 
         <p class="footer">
-            Powered by <a href="https://groq.com" target="_blank">Groq AI</a>
+            Powered by <a href="https://openai.com" target="_blank">OpenAI</a>
         </p>
     </div>
 
@@ -381,8 +403,10 @@
         function handleFile(file) {
             if (!file) return;
 
-            if (file.type !== 'application/pdf') {
-                showError('Please upload a PDF file');
+            const allowedExtensions = ['pdf', 'png', 'jpg', 'jpeg', 'bmp', 'tiff', 'webp', 'docx', 'pptx', 'txt'];
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!allowedExtensions.includes(ext)) {
+                showError('Unsupported file type. Allowed: PDF, Images, DOCX, PPTX, TXT');
                 return;
             }
 

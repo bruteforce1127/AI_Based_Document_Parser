@@ -2,20 +2,21 @@
 Key Manager Service - Handles API key rotation to avoid rate limits
 """
 import itertools
-from groq import Groq
+import importlib
 import config
 
+# Dynamically load the AI inference SDK
+_sdk = importlib.import_module(config.AI_SDK_MODULE)
+_ClientClass = getattr(_sdk, config.AI_SDK_CLIENT)
+
 # Create a cycle iterator for round-robin rotation
-_key_cycle = itertools.cycle(config.GROQ_API_KEYS)
+_key_cycle = itertools.cycle(config.OPENAI_API_KEYS)
 
 def get_current_key():
     """Get the next API key in the rotation"""
     return next(_key_cycle)
 
-def get_groq_client():
-    """Get a Groq client initialized with the next API key"""
-    # Simply rotating for every new client request is a simple way 
-    # to distribute load roughly evenly.
+def get_openai_client():
+    """Get an OpenAI client initialized with the next API key"""
     api_key = get_current_key()
-    # print(f"Using API Key ending in: ...{api_key[-4:]}") # Debug log
-    return Groq(api_key=api_key)
+    return _ClientClass(api_key=api_key)

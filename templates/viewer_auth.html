@@ -384,7 +384,8 @@
         <div class="translation-panel">
             <div class="tabs">
                 <div class="tab active" data-tab="translate">Translate Text</div>
-                <div class="tab" data-tab="full">Translate Full PDF</div>
+                <div class="tab" data-tab="full">Translate Full Doc</div>
+                <div class="tab" data-tab="podcast">🎙️ Podcast</div>
             </div>
 
             <div class="tab-content active" id="translateTab">
@@ -430,6 +431,127 @@
                 </div>
                 <button class="translate-btn" id="fullTranslateBtn">🌐 Translate Full Document</button>
                 <div id="fullTranslateResult" style="flex: 1; overflow-y: auto;"></div>
+            </div>
+
+            <!-- Podcast Tab -->
+            <div class="tab-content" id="podcastTab">
+                <div class="input-group">
+                    <label class="input-label">Summary Language</label>
+                    <select class="language-select" id="podcastLanguage">
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="French">French</option>
+                        <option value="German">German</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="Japanese">Japanese</option>
+                        <option value="Arabic">Arabic</option>
+                        <option value="Bengali">Bengali</option>
+                        <option value="Tamil">Tamil</option>
+                        <option value="Telugu">Telugu</option>
+                    </select>
+                </div>
+                <button class="translate-btn" id="generatePodcastBtn">🎙️ Generate Podcast Summary</button>
+
+                <!-- Podcast Player -->
+                <div id="podcastPlayer" style="display: none;">
+                    <div
+                        style="background: linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(124,58,237,0.15) 100%); border: 1px solid rgba(139,92,246,0.3); border-radius: 16px; padding: 20px;">
+                        <div style="text-align: center; margin-bottom: 16px;">
+                            <div style="font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 4px;">🎙️ Podcast
+                                Summary</div>
+                            <div id="podcastTitle" style="font-size: 15px; font-weight: 600; color: #a78bfa;"></div>
+                        </div>
+
+                        <!-- Waveform Animation -->
+                        <div id="waveform"
+                            style="display: flex; align-items: center; justify-content: center; gap: 3px; height: 40px; margin-bottom: 16px;">
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 20%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 40%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 60%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 80%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 100%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 70%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 50%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 30%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 60%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 90%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 40%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 70%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 50%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 80%; transition: height 0.15s;">
+                            </div>
+                            <div class="wave-bar"
+                                style="width: 4px; background: #8b5cf6; border-radius: 2px; height: 30%; transition: height 0.15s;">
+                            </div>
+                        </div>
+
+                        <!-- Controls -->
+                        <div
+                            style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px;">
+                            <button id="podcastPlayBtn" onclick="playPodcast()"
+                                style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border: none; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;"
+                                onmouseover="this.style.transform='scale(1.1)'"
+                                onmouseout="this.style.transform='scale(1)'">▶</button>
+                            <button id="podcastPauseBtn" onclick="pausePodcast()"
+                                style="width: 40px; height: 40px; border-radius: 50%; background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.3); color: #a78bfa; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">⏸</button>
+                            <button id="podcastStopBtn" onclick="stopPodcast()"
+                                style="width: 40px; height: 40px; border-radius: 50%; background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">⏹</button>
+                        </div>
+
+                        <!-- Speed Control -->
+                        <div style="display: flex; align-items: center; gap: 10px; justify-content: center;">
+                            <span style="font-size: 12px; color: rgba(255,255,255,0.5);">Speed:</span>
+                            <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1"
+                                style="width: 100px; accent-color: #8b5cf6;">
+                            <span id="speechRateLabel"
+                                style="font-size: 12px; color: #a78bfa; min-width: 30px;">1x</span>
+                        </div>
+                    </div>
+
+                    <!-- Summary Text -->
+                    <div
+                        style="margin-top: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; max-height: 250px; overflow-y: auto;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span
+                                style="font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px;">📝
+                                Read Along</span>
+                            <button class="copy-btn"
+                                onclick="navigator.clipboard.writeText(window.podcastSummaryText || '')">Copy</button>
+                        </div>
+                        <div id="podcastSummaryContent"
+                            style="font-size: 13px; line-height: 1.8; color: rgba(255,255,255,0.75); white-space: pre-wrap;">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -522,6 +644,104 @@
             } catch (e) { alert('Translation failed'); }
             finally { btn.disabled = false; btn.textContent = '🌐 Translate Full Document'; }
         });
+
+        // ==================== PODCAST ====================
+        let podcastSpeaking = false;
+        let waveformInterval = null;
+
+        document.getElementById('generatePodcastBtn').addEventListener('click', async () => {
+            const lang = document.getElementById('podcastLanguage').value;
+            const btn = document.getElementById('generatePodcastBtn');
+            btn.disabled = true; btn.textContent = '⏳ Generating...';
+
+            try {
+                const response = await fetch(`/podcast-summary/${docId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target_language: lang })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    window.podcastSummaryText = data.summary;
+                    document.getElementById('podcastTitle').textContent = data.filename;
+                    document.getElementById('podcastSummaryContent').textContent = data.summary;
+                    document.getElementById('podcastPlayer').style.display = 'block';
+                } else {
+                    alert(data.error || 'Failed to generate podcast');
+                }
+            } catch (e) { alert('Network error'); }
+            finally { btn.disabled = false; btn.textContent = '🎙️ Generate Podcast Summary'; }
+        });
+
+        document.getElementById('speechRate').addEventListener('input', (e) => {
+            document.getElementById('speechRateLabel').textContent = e.target.value + 'x';
+        });
+
+        function playPodcast() {
+            if (!window.podcastSummaryText) return;
+            const synth = window.speechSynthesis;
+
+            if (synth.paused) {
+                synth.resume();
+                startWaveform();
+                return;
+            }
+
+            synth.cancel();
+            const utterance = new SpeechSynthesisUtterance(window.podcastSummaryText);
+            utterance.rate = parseFloat(document.getElementById('speechRate').value);
+
+            // Try to match the selected language
+            const langMap = {
+                'English': 'en', 'Hindi': 'hi', 'Spanish': 'es', 'French': 'fr',
+                'German': 'de', 'Chinese': 'zh', 'Japanese': 'ja', 'Arabic': 'ar',
+                'Bengali': 'bn', 'Tamil': 'ta', 'Telugu': 'te'
+            };
+            const selectedLang = document.getElementById('podcastLanguage').value;
+            utterance.lang = langMap[selectedLang] || 'en';
+
+            // Try to find a matching voice
+            const voices = synth.getVoices();
+            const matchingVoice = voices.find(v => v.lang.startsWith(utterance.lang));
+            if (matchingVoice) utterance.voice = matchingVoice;
+
+            utterance.onstart = () => startWaveform();
+            utterance.onend = () => stopWaveform();
+            utterance.onpause = () => stopWaveform();
+            utterance.onerror = () => stopWaveform();
+
+            synth.speak(utterance);
+        }
+
+        function pausePodcast() {
+            window.speechSynthesis.pause();
+            stopWaveform();
+        }
+
+        function stopPodcast() {
+            window.speechSynthesis.cancel();
+            stopWaveform();
+        }
+
+        function startWaveform() {
+            if (waveformInterval) return;
+            const bars = document.querySelectorAll('.wave-bar');
+            waveformInterval = setInterval(() => {
+                bars.forEach(bar => {
+                    bar.style.height = (Math.random() * 80 + 20) + '%';
+                });
+            }, 150);
+        }
+
+        function stopWaveform() {
+            if (waveformInterval) {
+                clearInterval(waveformInterval);
+                waveformInterval = null;
+            }
+            document.querySelectorAll('.wave-bar').forEach((bar, i) => {
+                bar.style.height = [20, 40, 60, 80, 100, 70, 50, 30, 60, 90, 40, 70, 50, 80, 30][i % 15] + '%';
+            });
+        }
 
         function copyPage(index) {
             if (window.pagesData && window.pagesData[index]) {

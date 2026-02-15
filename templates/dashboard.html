@@ -182,6 +182,28 @@
             gap: 12px;
         }
 
+        @media (max-width: 768px) {
+            .header {
+                padding: 16px;
+            }
+
+            .container {
+                padding: 24px 16px;
+            }
+
+            .action-cards {
+                flex-direction: column;
+            }
+
+            .action-card {
+                max-width: 100%;
+            }
+
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .documents-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -459,7 +481,8 @@
             <div class="action-card new" onclick="openUploadModal()">
                 <div class="action-icon">📤</div>
                 <div class="action-title">Add New File</div>
-                <div class="action-desc">Upload a new PDF document to analyze its content, difficult terms, and
+                <div class="action-desc">Upload a document (PDF, Image, DOCX, PPTX, TXT) to analyze its content,
+                    difficult terms, and
                     consequences.</div>
             </div>
         </div>
@@ -485,7 +508,7 @@
         <div class="empty-state">
             <div class="empty-icon">📭</div>
             <div class="empty-title">No documents yet</div>
-            <div class="empty-text">Upload your first PDF to get started!</div>
+            <div class="empty-text">Upload your first document to get started!</div>
         </div>
         {% endif %}
     </div>
@@ -499,10 +522,10 @@
             </div>
             <div class="upload-zone" id="uploadZone">
                 <div class="upload-icon">📁</div>
-                <div class="upload-text">Drop your PDF here</div>
-                <div class="upload-hint">or click to browse files</div>
+                <div class="upload-text">Drop your document here</div>
+                <div class="upload-hint">PDF, Images, DOCX, PPTX, TXT supported</div>
                 <div class="file-name" id="fileName"></div>
-                <input type="file" id="fileInput" accept=".pdf">
+                <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.bmp,.tiff,.webp,.docx,.pptx,.txt">
             </div>
             <button class="upload-btn" id="uploadBtn" onclick="uploadFile()">Upload & Analyze</button>
         </div>
@@ -537,7 +560,9 @@
         uploadZone.addEventListener('drop', (e) => { e.preventDefault(); uploadZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
 
         function handleFile(file) {
-            if (!file || file.type !== 'application/pdf') { alert('Please upload a PDF file'); return; }
+            const allowedExtensions = ['pdf', 'png', 'jpg', 'jpeg', 'bmp', 'tiff', 'webp', 'docx', 'pptx', 'txt'];
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!file || !allowedExtensions.includes(ext)) { alert('Unsupported file type'); return; }
             selectedFile = file;
             fileName.textContent = file.name;
             fileName.classList.add('visible');

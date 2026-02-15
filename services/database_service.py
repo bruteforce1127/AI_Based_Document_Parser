@@ -8,9 +8,36 @@ from datetime import datetime
 # Initialize Supabase client
 supabase = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
 
+import time
+from functools import wraps
+
+def retry_db_op(max_retries=3, delay=1):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            retries = 0
+            while retries < max_retries:
+                try:
+                    return f(*args, **kwargs)
+                except Exception as e:
+                    print(f"Database operation failed (Attempt {retries+1}/{max_retries}): {e}")
+                    if "getaddrinfo failed" in str(e) or "create_connection" in str(e):
+                         # Network error, wait and retry
+                         time.sleep(delay * (2 ** retries))
+                         retries += 1
+                    else:
+                        # Other error (e.g. logic), raise immediately or return None depending on pattern
+                        # For now, we'll retry all exceptions to be safe, but log them
+                        time.sleep(delay)
+                        retries += 1
+            return None # Failed after all retries
+        return wrapper
+    return decorator
+
 
 # ==================== USER OPERATIONS ====================
 
+@retry_db_op()
 def create_user(name, email, password_hash):
     """Create a new user in the database"""
     try:
@@ -26,9 +53,12 @@ def create_user(name, email, password_hash):
         return None
     except Exception as e:
         print(f"Error creating user: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 
+@retry_db_op()
 def get_user_by_email(email):
     """Get user by email"""
     try:
@@ -38,9 +68,12 @@ def get_user_by_email(email):
         return None
     except Exception as e:
         print(f"Error getting user: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 
+@retry_db_op()
 def get_user_by_id(user_id):
     """Get user by ID"""
     try:
@@ -55,6 +88,7 @@ def get_user_by_id(user_id):
 
 # ==================== DOCUMENT OPERATIONS ====================
 
+@retry_db_op()
 def save_document(user_id, filename, document_type, content, pages_count):
     """Save a document to the database"""
     try:
@@ -75,6 +109,7 @@ def save_document(user_id, filename, document_type, content, pages_count):
         return None
 
 
+@retry_db_op()
 def get_user_documents(user_id):
     """Get all documents for a user"""
     try:
@@ -85,6 +120,7 @@ def get_user_documents(user_id):
         return []
 
 
+@retry_db_op()
 def get_document_by_id(doc_id, user_id=None):
     """Get a document by ID, optionally verify user ownership"""
     try:
@@ -101,6 +137,7 @@ def get_document_by_id(doc_id, user_id=None):
         return None
 
 
+@retry_db_op()
 def delete_document(doc_id, user_id):
     """Delete a document"""
     try:
@@ -113,6 +150,7 @@ def delete_document(doc_id, user_id):
 
 # ==================== ANALYSIS CACHE OPERATIONS ====================
 
+@retry_db_op()
 def save_analysis(document_id, analysis_type, result_data):
     """Save analysis result for a document"""
     try:
@@ -140,6 +178,7 @@ def save_analysis(document_id, analysis_type, result_data):
         return None
 
 
+@retry_db_op()
 def get_analysis(document_id, analysis_type):
     """Get cached analysis for a document"""
     try:

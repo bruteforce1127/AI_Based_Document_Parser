@@ -8,7 +8,7 @@ from functools import wraps
 from werkzeug.utils import secure_filename
 
 import config
-from services import pdf_service, groq_service, database_service, auth_service
+from services import document_service, openai_service, database_service, auth_service
 
 auth_doc = Blueprint('auth_doc', __name__)
 
@@ -54,7 +54,7 @@ def classify_auth():
         return jsonify({'error': 'No file selected'}), 400
     
     if not allowed_file(file.filename):
-        return jsonify({'error': 'Only PDF files are allowed'}), 400
+        return jsonify({'error': 'Unsupported file type. Allowed: PDF, Images (PNG, JPG, BMP, TIFF, WEBP), DOCX, PPTX, TXT'}), 400
     
     try:
         # Ensure upload folder exists
@@ -65,20 +65,20 @@ def classify_auth():
         filepath = os.path.join(config.UPLOAD_FOLDER, filename)
         file.save(filepath)
         
-        # Extract text
-        pages = pdf_service.extract_text_from_pdf(filepath)
+        # Extract text from the uploaded document
+        pages = document_service.extract_text(filepath)
         
         # Clean up
         os.remove(filepath)
         
         if not pages:
-            return jsonify({'error': 'Could not extract text from PDF'}), 400
+            return jsonify({'error': 'Could not extract text from the uploaded file'}), 400
         
         # Combine text for classification
         full_text = '\n\n'.join([p['content'] for p in pages])
         
         # Classify
-        document_type = groq_service.classify_document(full_text)
+        document_type = openai_service.classify_document(full_text)
         
         # Save to database
         doc = database_service.save_document(
@@ -185,7 +185,7 @@ def translate_auth():
     if not text:
         return jsonify({'error': 'No text to translate'}), 400
     
-    translated = groq_service.translate_text(text, target_language)
+    translated = openai_service.translate_text(text, target_language)
     
     return jsonify({
         'success': True,
@@ -207,7 +207,7 @@ def analyze_terms_auth(doc_id):
     data = request.get_json()
     target_language = data.get('target_language', 'English') if data else 'English'
     
-    terms = groq_service.analyze_difficult_terms(doc['content'], target_language)
+    terms = openai_service.analyze_difficult_terms(doc['content'], target_language)
     
     return jsonify({
         'success': True,
@@ -230,7 +230,7 @@ def analyze_consequences_auth(doc_id):
     data = request.get_json()
     target_language = data.get('target_language', 'English') if data else 'English'
     
-    result = groq_service.analyze_consequences(doc['content'], target_language)
+    result = openai_service.analyze_consequences(doc['content'], target_language)
     
     return jsonify({
         'success': True,
@@ -259,7 +259,7 @@ def translate_document_auth(doc_id):
     content = doc.get('content', '')
     pages = [{'page_number': 1, 'content': content}]
     
-    translated_pages = groq_service.translate_full_document(pages, target_language)
+    translated_pages = openai_service.translate_full_document(pages, target_language)
     
     return jsonify({
         'success': True,

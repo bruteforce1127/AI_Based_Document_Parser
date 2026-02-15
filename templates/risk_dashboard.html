@@ -407,11 +407,578 @@
 
         @media (max-width: 900px) {
             .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
 
             .charts-grid {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        .counter-offer-btn {
+            margin-top: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 22px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .counter-offer-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .counter-offer-btn:hover::before {
+            left: 100%;
+        }
+
+        .counter-offer-btn:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+            cursor: pointer;
+        }
+
+        .counter-offer-btn:active:not(:disabled) {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .counter-offer-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .counter-offer-btn.loading {
+            color: transparent;
+            pointer-events: none;
+        }
+
+        .counter-offer-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .co-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .co-modal.visible {
+            display: flex;
+        }
+
+        @keyframes coFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes coSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .co-modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 16px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(102, 126, 234, 0.1);
+            animation: coSlideUp 0.3s ease;
+        }
+
+        .co-modal-header {
+            padding: 20px 24px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .co-modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #a5b4fc;
+        }
+
+        .co-modal-close {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .co-modal-close:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .co-modal-body {
+            padding: 20px 24px;
+        }
+
+        .co-subject {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f59e0b;
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #f59e0b;
+        }
+
+        .co-letter {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 16px;
+            white-space: pre-wrap;
+            font-size: 13px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .co-alt-clause {
+            background: rgba(16, 185, 129, 0.08);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 14px;
+            border-left: 3px solid #10b981;
+        }
+
+        .co-alt-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #10b981;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .co-alt-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .co-key-points {
+            margin-bottom: 16px;
+        }
+
+        .co-kp-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #667eea;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .co-kp-item {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 4px 0;
+        }
+
+        .co-modal-actions {
+            padding: 14px 24px 20px;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .co-copy-btn {
+            flex: 1;
+            padding: 10px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .co-copy-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .co-close-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .co-close-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ===== Legality Check Styles ===== */
+        .legality-section {
+            margin-top: 40px;
+            border-top: 2px solid rgba(255, 255, 255, 0.08);
+            padding-top: 32px;
+        }
+
+        .legality-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .legality-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .legality-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legality-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .legality-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .legality-loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .legality-loading .loading-spinner {
+            margin: 0 auto 12px;
+        }
+
+        .legality-results {
+            display: none;
+        }
+
+        .legality-results.visible {
+            display: block;
+        }
+
+        .legality-stats {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .legality-stat {
+            flex: 1;
+            min-width: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .legality-stat-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .legality-stat-value.violations {
+            color: #ef4444;
+        }
+
+        .legality-stat-value.compliant {
+            color: #22c55e;
+        }
+
+        .legality-stat-value.na {
+            color: #94a3b8;
+        }
+
+        .legality-stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 4px;
+        }
+
+        .law-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .law-badge.violation {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .law-badge.compliant {
+            background: rgba(34, 197, 94, 0.1);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .violation-card {
+            background: rgba(239, 68, 68, 0.06);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-left: 4px solid #ef4444;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+
+        .violation-card.medium {
+            background: rgba(245, 158, 11, 0.06);
+            border-color: rgba(245, 158, 11, 0.2);
+            border-left-color: #f59e0b;
+        }
+
+        .violation-card.low {
+            background: rgba(59, 130, 246, 0.06);
+            border-color: rgba(59, 130, 246, 0.2);
+            border-left-color: #3b82f6;
+        }
+
+        .violation-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .violation-rule {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .violation-severity {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .violation-severity.high {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .violation-severity.medium {
+            background: #f59e0b;
+            color: #000;
+        }
+
+        .violation-severity.low {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .violation-law {
+            font-size: 12px;
+            color: #fbbf24;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .violation-clause {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            font-style: italic;
+            border-left: 3px solid rgba(239, 68, 68, 0.5);
+        }
+
+        .violation-explanation {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .violation-recommendation {
+            font-size: 13px;
+            color: #22c55e;
+            display: flex;
+            align-items: start;
+            gap: 6px;
+        }
+
+        .compliant-card {
+            background: rgba(34, 197, 94, 0.06);
+            border: 1px solid rgba(34, 197, 94, 0.15);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .compliant-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .compliant-info {
+            flex: 1;
+        }
+
+        .compliant-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #86efac;
+        }
+
+        .compliant-law {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .compliant-note {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px;
+                position: relative;
+            }
+
+            .nav-btns {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .nav-btn {
+                flex: 1;
+                text-align: center;
+                padding: 10px;
+            }
+
+            .container {
+                padding: 24px 16px;
+            }
+
+            .control-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .control-group {
+                width: 100%;
+            }
+
+            .analyze-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .co-modal-content {
+                max-width: 95%;
+                max-height: 80vh;
             }
         }
     </style>
@@ -507,6 +1074,28 @@
             <!-- Recommendations -->
             <h2 class="section-title" style="margin-top: 32px;">✅ Recommendations</h2>
             <div class="recommendations-card" id="recommendationsCard"></div>
+
+            <!-- Legality Check Section -->
+            <div class="legality-section">
+                <div class="legality-header">
+                    <h2 class="legality-title">⚖️ Legality Check (Audit Lens)</h2>
+                    <button class="legality-btn" id="legalityBtn" onclick="runLegalityCheck()">🔎 Run Legality
+                        Check</button>
+                </div>
+                <div id="legalityLoading" class="legality-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Checking against Indian laws...</p>
+                </div>
+                <div id="legalityResults" class="legality-results">
+                    <div id="legalityStats" class="legality-stats"></div>
+                    <div id="legalitySummary" class="summary-card" style="display:none;"></div>
+                    <h3 class="section-title" id="violationsTitle" style="display:none;">🚨 Legal Violations Found</h3>
+                    <div id="violationsList"></div>
+                    <h3 class="section-title" id="compliantTitle" style="display:none; margin-top: 24px;">✅ Compliant
+                        Rules</h3>
+                    <div id="compliantList"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -604,6 +1193,7 @@
             if (clauses.length > 0) {
                 clausesList.innerHTML = clauses.map(c => {
                     const level = (c.risk_level || 'medium').toLowerCase();
+                    const clauseData = btoa(unescape(encodeURIComponent(JSON.stringify({ t: c.clause_text, c: c.category, r: c.risk_level, e: c.explanation }))));
                     return `
                         <div class="clause-card ${level}">
                             <div class="clause-header">
@@ -615,6 +1205,9 @@
                                 <span class="clause-explanation-icon">⚠️</span>
                                 <span class="clause-explanation-text"><strong>Risk:</strong> ${escapeHtml(c.explanation)}</span>
                             </div>
+                            <button class="counter-offer-btn" onclick="generateCounterOffer(this, '${clauseData}')">
+                                ✉️ Generate Counter-Offer
+                            </button>
                         </div>
                     `;
                 }).join('');
@@ -642,6 +1235,228 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+        async function generateCounterOffer(btn, encodedData) {
+            const data = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+            const language = document.getElementById('languageSelect').value;
+
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`/generate-counter-offer/${docId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        clause_text: data.t,
+                        category: data.c,
+                        risk_level: data.r,
+                        explanation: data.e,
+                        target_language: language
+                    })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showCounterOfferModal(result.counter_offer);
+                } else {
+                    alert(result.error || 'Failed to generate counter-offer');
+                }
+            } catch (e) {
+                alert('Network error. Please try again.');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+
+        function showCounterOfferModal(co) {
+            let modal = document.getElementById('counterOfferModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'counterOfferModal';
+                modal.className = 'co-modal';
+                document.body.appendChild(modal);
+            }
+
+            const kpHtml = (co.key_points || []).map(p => `<div class="co-kp-item"><span>•</span><span>${escapeHtml(p)}</span></div>`).join('');
+
+            modal.innerHTML = `
+                <div class="co-modal-content">
+                    <div class="co-modal-header">
+                        <span class="co-modal-title">✉️ Counter-Offer Letter</span>
+                        <button class="co-modal-close" onclick="closeCounterOfferModal()">×</button>
+                    </div>
+                    <div class="co-modal-body">
+                        <div class="co-subject">📌 ${escapeHtml(co.subject)}</div>
+                        <div class="co-letter" id="coLetterBody">${escapeHtml(co.letter_body)}</div>
+                        ${co.suggested_alternative ? `
+                            <div class="co-alt-clause">
+                                <div class="co-alt-label">✏️ Suggested Alternative Clause</div>
+                                <div class="co-alt-text">${escapeHtml(co.suggested_alternative)}</div>
+                            </div>
+                        ` : ''}
+                        ${kpHtml ? `
+                            <div class="co-key-points">
+                                <div class="co-kp-label">💡 Key Negotiation Points</div>
+                                ${kpHtml}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="co-modal-actions">
+                        <button class="co-copy-btn" onclick="copyCounterOffer()">📋 Copy Letter to Clipboard</button>
+                        <button class="co-close-btn" onclick="closeCounterOfferModal()">Close</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.add('visible');
+        }
+
+        function closeCounterOfferModal() {
+            const modal = document.getElementById('counterOfferModal');
+            if (modal) modal.classList.remove('visible');
+        }
+
+        function copyCounterOffer() {
+            const letterBody = document.getElementById('coLetterBody');
+            if (letterBody) {
+                navigator.clipboard.writeText(letterBody.textContent).then(() => {
+                    const btn = document.querySelector('.co-copy-btn');
+                    btn.textContent = '✅ Copied!';
+                    setTimeout(() => btn.textContent = '📋 Copy Letter to Clipboard', 2000);
+                });
+            }
+        }
+        // ===== Legality Check =====
+        async function runLegalityCheck() {
+            const btn = document.getElementById('legalityBtn');
+            const loading = document.getElementById('legalityLoading');
+            const resultsDiv = document.getElementById('legalityResults');
+            const language = document.getElementById('languageSelect').value;
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Checking...';
+            loading.style.display = 'block';
+            resultsDiv.classList.remove('visible');
+
+            try {
+                const response = await fetch(`/legality-check/${docId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target_language: language })
+                });
+                const data = await response.json();
+                loading.style.display = 'none';
+
+                if (data.success) {
+                    renderLegalityResults(data.legality, data.document_type);
+                    resultsDiv.classList.add('visible');
+                } else {
+                    alert(data.error || 'Legality check failed');
+                }
+            } catch (e) {
+                loading.style.display = 'none';
+                alert('Error running legality check');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔎 Run Legality Check';
+            }
+        }
+
+        function renderLegalityResults(data, docType) {
+            const violations = data.violations || [];
+            const compliant = data.compliant_rules || [];
+            const na = data.not_applicable || [];
+            const catLabel = data.category_label || 'General';
+            const catIcon = data.category_icon || '📄';
+
+            // Stats
+            document.getElementById('legalityStats').innerHTML = `
+                <div class="legality-stat">
+                    <div class="legality-stat-value violations">${violations.length}</div>
+                    <div class="legality-stat-label">Violations</div>
+                </div>
+                <div class="legality-stat">
+                    <div class="legality-stat-value compliant">${compliant.length}</div>
+                    <div class="legality-stat-label">Compliant</div>
+                </div>
+                <div class="legality-stat">
+                    <div class="legality-stat-value na">${na.length}</div>
+                    <div class="legality-stat-label">Not Applicable</div>
+                </div>
+                <div class="legality-stat">
+                    <div class="legality-stat-value" style="color:#a5b4fc;">${data.total_rules_checked || 0}</div>
+                    <div class="legality-stat-label">Rules Checked</div>
+                </div>
+            `;
+
+            // Summary
+            if (data.summary) {
+                const summaryEl = document.getElementById('legalitySummary');
+                summaryEl.style.display = 'block';
+                summaryEl.innerHTML = `
+                    <div class="summary-title">${catIcon} ${catLabel} — Audit Summary</div>
+                    <p class="summary-text">${escapeHtml(data.summary)}</p>
+                `;
+            }
+
+            // Violations
+            const violTitle = document.getElementById('violationsTitle');
+            const violList = document.getElementById('violationsList');
+            if (violations.length > 0) {
+                violTitle.style.display = 'block';
+                violList.innerHTML = violations.map(v => {
+                    const sev = (v.severity || 'HIGH').toLowerCase();
+                    const lawLabel = getLawLabel(catLabel, v.rule_name);
+                    return `
+                        <div class="violation-card ${sev}">
+                            <div class="violation-top">
+                                <span class="violation-rule">${lawLabel}</span>
+                                <span class="violation-severity ${sev}">${v.severity || 'HIGH'}</span>
+                            </div>
+                            <div class="violation-law">📜 ${escapeHtml(v.law_source)}</div>
+                            ${v.clause_found ? `<div class="violation-clause">"${escapeHtml(v.clause_found)}"</div>` : ''}
+                            <div class="violation-explanation">${escapeHtml(v.explanation)}</div>
+                            ${v.recommendation ? `<div class="violation-recommendation"><span>💡</span><span>${escapeHtml(v.recommendation)}</span></div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                violTitle.style.display = 'block';
+                violList.innerHTML = '<p style="color: #22c55e; padding: 16px;">✅ No legal violations detected! Your document appears compliant.</p>';
+            }
+
+            // Compliant rules
+            const compTitle = document.getElementById('compliantTitle');
+            const compList = document.getElementById('compliantList');
+            if (compliant.length > 0) {
+                compTitle.style.display = 'block';
+                compList.innerHTML = compliant.map(c => `
+                    <div class="compliant-card">
+                        <span class="compliant-icon">✅</span>
+                        <div class="compliant-info">
+                            <div class="compliant-name">${escapeHtml(c.rule_name)}</div>
+                            <div class="compliant-law">${escapeHtml(c.law_source)}</div>
+                        </div>
+                        <div class="compliant-note">${escapeHtml(c.note || '')}</div>
+                    </div>
+                `).join('');
+            } else {
+                compTitle.style.display = 'none';
+                compList.innerHTML = '';
+            }
+        }
+
+        function getLawLabel(catLabel, ruleName) {
+            const labelMap = {
+                'RBI / Banking Law': '⚠️ RBI Violation:',
+                'Labor Law': '⚠️ Labor Law Alert:',
+                'Tenancy Law': '⚠️ Tenancy Law Alert:',
+                'IRDAI Regulation': '⚠️ IRDAI Violation:',
+                'Contract Law': '⚠️ Contract Law Alert:'
+            };
+            const prefix = labelMap[catLabel] || '⚠️ Legal Alert:';
+            return `${prefix} ${ruleName}`;
         }
     </script>
 </body>

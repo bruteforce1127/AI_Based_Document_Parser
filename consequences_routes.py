@@ -2,7 +2,7 @@
 Consequences Routes - Routes for rules and consequences analysis feature
 """
 from flask import Blueprint, render_template, request, jsonify
-from services import groq_service
+from services import openai_service
 from routes import document_store
 
 consequences = Blueprint('consequences', __name__)
@@ -31,7 +31,7 @@ def analyze_consequences(doc_id):
     full_text = '\n\n'.join([p['content'] for p in doc['pages']])
     
     # Analyze for rules and consequences
-    result = groq_service.analyze_consequences(full_text, target_language)
+    result = openai_service.analyze_consequences(full_text, target_language)
     
     return jsonify({
         'success': True,

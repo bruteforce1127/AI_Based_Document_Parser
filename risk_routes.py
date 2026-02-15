@@ -3,7 +3,7 @@ Risk Routes - Routes for risk analysis dashboard
 """
 from flask import Blueprint, render_template, request, jsonify, redirect
 from functools import wraps
-from services import risk_service, database_service, auth_service
+from services import risk_service, database_service, auth_service, counter_offer_service, legality_service
 
 risk = Blueprint('risk', __name__)
 
@@ -63,4 +63,59 @@ def analyze_risk(doc_id):
         'document_type': doc['document_type'],
         'filename': doc['filename'],
         'analysis': result
+    })
+
+
+@risk.route('/generate-counter-offer/<doc_id>', methods=['POST'])
+@login_required
+def generate_counter_offer(doc_id):
+    """Generate a professional counter-offer letter for a risky clause"""
+    user = get_current_user()
+    doc = database_service.get_document_by_id(doc_id, user['user_id'])
+
+    if not doc:
+        return jsonify({'error': 'Document not found'}), 404
+
+    data = request.get_json()
+    if not data or not data.get('clause_text'):
+        return jsonify({'error': 'No clause provided'}), 400
+
+    result = counter_offer_service.generate_counter_offer(
+        clause_text=data.get('clause_text', ''),
+        category=data.get('category', 'General'),
+        risk_level=data.get('risk_level', 'Medium'),
+        explanation=data.get('explanation', ''),
+        document_type=doc['document_type'],
+        target_language=data.get('target_language', 'English')
+    )
+
+    return jsonify({
+        'success': True,
+        'counter_offer': result
+    })
+
+
+@risk.route('/legality-check/<doc_id>', methods=['POST'])
+@login_required
+def legality_check(doc_id):
+    """Run legality check against Indian laws"""
+    user = get_current_user()
+    doc = database_service.get_document_by_id(doc_id, user['user_id'])
+
+    if not doc:
+        return jsonify({'error': 'Document not found'}), 404
+
+    data = request.get_json()
+    target_language = data.get('target_language', 'English') if data else 'English'
+
+    result = legality_service.check_legality(
+        doc['content'],
+        doc['document_type'],
+        target_language
+    )
+
+    return jsonify({
+        'success': True,
+        'document_type': doc['document_type'],
+        'legality': result
     })
